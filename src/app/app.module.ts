@@ -4,9 +4,14 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
+import { AngularFireModule } from 'angularfire2';
+import { AngularFireDatabase, AngularFireDatabaseModule } from 'angularfire2/database';
 import { GoogleMaps } from '@ionic-native/google-maps';
 
 import { MyApp } from './app.component';
+
+import { firebaseConfig } from './firebaseCredentials';
+import { GeoProvider } from '../providers/geo/geo';
 
 @NgModule({
   declarations: [
@@ -14,6 +19,8 @@ import { MyApp } from './app.component';
   ],
   imports: [
     BrowserModule,
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -24,7 +31,9 @@ import { MyApp } from './app.component';
     StatusBar,
     SplashScreen,
     GoogleMaps,
-    { provide: ErrorHandler, useClass: IonicErrorHandler }
+    AngularFireDatabase,
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    GeoProvider
   ]
 })
 export class AppModule { }

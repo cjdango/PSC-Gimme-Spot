@@ -13,6 +13,8 @@ import {
   MyLocation
 } from '@ionic-native/google-maps';
 
+import { GeoProvider } from '../../providers/geo/geo';
+
 /**
  * Generated class for the MapPage page.
  *
@@ -29,19 +31,28 @@ export class MapPage {
   map: GoogleMap;
   @ViewChild('map') mapRef: ElementRef;
 
+  markers: any;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public googleMaps: GoogleMaps
+    public googleMaps: GoogleMaps,
+    public geoProvider: GeoProvider
   ) {
   }
 
   ionViewDidLoad() {
     this.loadMap();
+    // this.geoProvider.setLocation('2',  [8.1478383, 125.6611933])
+    // this.geoProvider.getLocations(500, [10.1478383, 125.6611933]);
+
+    // this.geoProvider.hits.subscribe(hits => {
+    //   console.log(hits)
+    // })
   }
 
   async loadMap() {
-
+   
     const mapOptions: GoogleMapOptions = {
       controls: {
         myLocationButton: true
@@ -55,31 +66,45 @@ export class MapPage {
     // Wait the MAP_READY before using any methods.
     await this.map.one(GoogleMapsEvent.MAP_READY)
     // Now you can use all methods safely.
-    console.log('Map is ready!');    
+    console.log('Map is ready!');
 
     const myLocation = await this.map.getMyLocation(myLocationOption);
+    const lat = myLocation.latLng.lat
+    const lng = myLocation.latLng.lng;
 
     //  Camera settings
     this.map.setCameraTarget(myLocation.latLng);
     this.map.setCameraZoom(17);
     this.map.setCameraTilt(30);
 
-    const markerOptions: MarkerOptions = {
-      title: 'This is You!',
-      icon: 'blue',
-      animation: 'DROP',
-      position: {
-        lat: myLocation.latLng.lat,
-        lng: myLocation.latLng.lng
-      }
-    };
+    this.geoProvider.setLocation('1', [Number.parseFloat(lat.toFixed(2)), lng])
+    this.geoProvider.setLocation('2', [lat, Number.parseFloat(lng.toFixed(2))])
+    this.geoProvider.getLocations(1, [lat, lng]);
 
-    const marker = await this.map.addMarker(markerOptions);
+    this.geoProvider.hits.subscribe(hits => {
+      hits.forEach(hit => {
+        const markerOptions: MarkerOptions = {
+          title: 'A toilet',
+          snippet: 'distance: ' + hit.distance.toFixed(2) + ' km',
+          icon: 'blue',
+          animation: 'DROP',
+          position: {
+            lat: hit.location[0],
+            lng: hit.location[1]
+          }
+        };
 
-    marker.on(GoogleMapsEvent.MARKER_CLICK)
-      .subscribe(() => {
-        alert('clicked');
+        this.map.addMarker(markerOptions)
+          .then(marker => {
+            marker.on(GoogleMapsEvent.MARKER_CLICK)
+              .subscribe(() => {
+                // Do something
+              });
+          });
       });
+    })
+
+
   }
 
 }
