@@ -13,7 +13,7 @@ import { AngularFireList } from 'angularfire2/database/interfaces';
 */
 @Injectable()
 export class GeoProvider {
-  dbRef: AngularFireList<{}>;
+  dbRef: any;
   geoFire: any;
 
   hits = new BehaviorSubject([]);
@@ -21,17 +21,20 @@ export class GeoProvider {
   constructor(
     public afdb: AngularFireDatabase
   ) {
-    this.dbRef = this.afdb.list('/toilet-location');
-    this.geoFire = new GeoFire(this.dbRef.query.ref);
+    this.dbRef = this.afdb.list('toilet-location').query.ref;
+    this.geoFire = new GeoFire(this.dbRef);
   }
 
   async setLocation(key: string, coords: Array<number>) {
     try {
       await this.geoFire.set(key, coords);
-      console.log('location updated');
     } catch (error) {
       console.log(error);
     }
+  }
+
+  getLocationRef(key: string) {
+    return this.afdb.object(`toilet-location/${key}`).query.ref
   }
 
   getLocations(radius: number, coords: Array<number>) {
@@ -39,16 +42,17 @@ export class GeoProvider {
       center: coords,
       radius: radius
     })
-    .on('key_entered', (key, location, distance) => {
-      const hit = {
-        location: location,
-        distance: distance
-      }
+      .on('key_entered', (key, location, distance) => {
+        const hit = {
+          location: location,
+          distance: distance,
+          key: key
+        }
 
-      const currentHits = this.hits.value;
-      currentHits.push(hit);
-      this.hits.next(currentHits);
-    })
+        const currentHits = this.hits.value;
+        currentHits.push(hit);
+        this.hits.next(currentHits);
+      })
   }
 
 }
