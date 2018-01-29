@@ -11,7 +11,6 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { MyApp } from './app.component';
 
 import { firebaseConfig } from './firebaseCredentials';
-import { GeoProvider } from '../providers/geo/geo';
 import { ToiletProvider } from '../providers/toilet/toilet';
 
 @NgModule({
@@ -34,7 +33,6 @@ import { ToiletProvider } from '../providers/toilet/toilet';
     GoogleMaps,
     AngularFireDatabase,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    GeoProvider,
     ToiletProvider,
     ToiletProvider
   ]
