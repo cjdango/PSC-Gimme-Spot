@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabase, AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFireAuthModule } from 'angularfire2/auth';
 import { GoogleMaps } from '@ionic-native/google-maps';
 
 import { MyApp } from './app.component';
@@ -21,6 +22,7 @@ import { ToiletProvider } from '../providers/toilet/toilet';
     BrowserModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
+    AngularFireAuthModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -34,7 +36,6 @@ import { ToiletProvider } from '../providers/toilet/toilet';
     AngularFireDatabase,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     ToiletProvider,
-    ToiletProvider
   ]
 })
 export class AppModule { }
